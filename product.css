@@ -1,0 +1,127 @@
+/* =========================================================
+   product.css — styles for templates/product.html ONLY.
+   Shared variables/navbar/buttons/cards/badges are in base.css
+   (already linked in base.html) - reuse those classes here
+   instead of redefining colors from scratch.
+   ========================================================= */
+
+/* ---------- Breadcrumb ---------- */
+.breadcrumb { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; font-size: 14px; color: var(--text-muted); }
+.breadcrumb a:hover { color: var(--primary); }
+.crumb-sep { opacity: .5; }
+.crumb-current { color: var(--text); font-weight: 600; }
+
+/* ---------- Loading / error ---------- */
+.panel-state { padding: 60px 20px; text-align: center; color: var(--text-muted); background: var(--card); border: 1px solid var(--border); border-radius: 14px; }
+.error-state { color: var(--red-text); }
+
+/* ---------- Hero ---------- */
+.hero {
+    display: grid;
+    grid-template-columns: auto 1.4fr auto auto;
+    gap: 28px;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 24px;
+}
+.hero-img { width: 150px; height: 150px; border-radius: 12px; border: 1px solid var(--border); background: #f7f9fc; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.hero-img img { width: 100%; height: 100%; object-fit: contain; }
+.hero-main h1 { margin: 0 0 10px; font-size: 30px; }
+.pill-category { display: inline-block; background: var(--primary-soft); color: var(--primary); font-size: 13px; font-weight: 700; padding: 5px 14px; border-radius: 20px; }
+.hero-sub { margin-top: 16px; }
+.hero-stock { font-size: 30px; font-weight: 800; }
+.hero-stock small { font-size: 15px; font-weight: 600; color: var(--text-muted); }
+
+.hero-facts { display: flex; gap: 32px; border-left: 1px solid var(--border); padding-left: 32px; }
+.fact-note { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+
+.hero-risk { border-radius: 12px; padding: 16px 24px; text-align: center; min-width: 150px; }
+.risk-big { font-size: 24px; font-weight: 800; margin-top: 6px; }
+.risk-Critical, .risk-High { background: var(--red-bg); }
+.risk-Critical .risk-big, .risk-High .risk-big { color: var(--red-text); }
+.risk-Medium { background: var(--yellow-bg); }
+.risk-Medium .risk-big { color: var(--yellow-text); }
+.risk-Low { background: var(--green-bg); }
+.risk-Low .risk-big { color: var(--green-text); }
+.risk-Unknown { background: #eee; }
+
+/* ---------- Tabs ---------- */
+.tabs { display: flex; gap: 6px; border-bottom: 1px solid var(--border); margin-bottom: 24px; flex-wrap: wrap; }
+.tab {
+    background: none; border: none; cursor: pointer;
+    padding: 14px 20px; font-size: 15px; font-weight: 600;
+    color: var(--text-muted); border-bottom: 3px solid transparent;
+    font-family: inherit;
+}
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--primary); border-color: var(--primary); }
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ---------- Charts ---------- */
+.card-title { margin: 0 0 16px; font-size: 16px; }
+.card-title small { color: var(--text-muted); font-weight: 500; font-size: 13px; }
+.chart-row { margin-bottom: 20px; }
+.chart-box { position: relative; height: 240px; }
+.chart-box.tall { height: 330px; }
+.chart-note { color: var(--text-muted); font-size: 13px; margin: 14px 0 0; line-height: 1.6; }
+
+.donut-box { display: flex; align-items: center; justify-content: center; }
+.donut-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none; }
+.donut-value { font-size: 26px; font-weight: 800; }
+.donut-label { font-size: 12px; color: var(--text-muted); }
+
+.legend { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+.legend-item { display: flex; align-items: center; gap: 9px; font-size: 13px; }
+.legend-dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
+.legend-val { margin-left: auto; font-weight: 700; }
+
+/* ---------- KPI cards ---------- */
+.kpi-row { margin-bottom: 20px; }
+.kpi { display: flex; align-items: center; gap: 14px; }
+.kpi-icon { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 21px; flex-shrink: 0; }
+.kpi-icon.blue { background: var(--primary-soft); }
+.kpi-icon.red { background: var(--red-bg); }
+.kpi-icon.purple { background: #ede9fe; }
+.kpi-icon.teal { background: var(--green-bg); }
+
+.kpi-tall { text-align: center; }
+.metric-huge { font-size: 34px; font-weight: 800; margin: 8px 0; }
+
+/* ---------- Why this risk ---------- */
+.why-card { display: flex; gap: 18px; align-items: flex-start; background: #f7faff; border-color: #dbe7fb; }
+.why-icon { width: 46px; height: 46px; border-radius: 50%; background: var(--primary-soft); display: flex; align-items: center; justify-content: center; font-size: 21px; flex-shrink: 0; }
+.why-body { flex: 1; }
+.why-body h3 { margin: 6px 0 12px; color: var(--primary); font-size: 17px; }
+.why-body ul { margin: 0; padding-left: 20px; color: var(--text); line-height: 1.9; font-size: 14px; }
+
+/* ---------- Tables ---------- */
+.kv-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.kv-table td { padding: 11px 0; border-bottom: 1px solid var(--border); }
+.kv-table tr:last-child td { border-bottom: none; }
+.kv-table td:first-child { color: var(--text-muted); }
+.kv-table td:last-child { text-align: right; font-weight: 700; }
+
+.method-list { margin: 0; padding-left: 20px; line-height: 2; font-size: 14px; color: var(--text); }
+.method-list code { background: #f1f3f9; padding: 2px 7px; border-radius: 5px; font-size: 13px; }
+
+/* ---------- Recommendation verdict ---------- */
+.verdict-card { text-align: center; padding: 34px; margin-bottom: 20px; }
+.verdict-card h2 { margin: 12px 0 8px; font-size: 27px; }
+.verdict-card p { margin: 0; color: var(--text-muted); max-width: 640px; margin-inline: auto; line-height: 1.7; }
+.verdict-badge { display: inline-block; padding: 7px 20px; border-radius: 20px; font-weight: 800; font-size: 13px; letter-spacing: .5px; }
+.verdict-reorder { background: var(--red-bg); color: var(--red-text); }
+.verdict-ok { background: var(--green-bg); color: var(--green-text); }
+
+@media (max-width: 1100px) {
+    .hero { grid-template-columns: auto 1fr; }
+    .hero-facts { border-left: none; padding-left: 0; grid-column: 1 / -1; flex-wrap: wrap; }
+    .hero-risk { grid-column: 1 / -1; }
+    .grid-3, .grid-4 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 700px) {
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    .hero { grid-template-columns: 1fr; text-align: center; }
+    .hero-img { margin-inline: auto; }
+}
