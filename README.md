@@ -1,58 +1,114 @@
-# StockMind — Team handoff
+# StockMind
 
-## What's ready
+**AI-Powered Inventory Management Web Platform**
 
-- `app.py` — Flask backend, all routes + API endpoints wired up.
-- `utils.py` — all the data/model logic (risk scoring, reorder point, stockout probability, SARIMA forecast, `FEATURED_PRODUCTS`, upload validation).
-- `retail_store_inventory.csv` — the demo dataset.
-- `forecasts.csv` — precomputed SARIMA forecasts for the demo dataset, trained on the FULL history (see `regenerate_forecasts.py` below). The app reads this instead of retraining live; it auto-falls-back to a live fit if this file is ever missing or stale.
-- `templates/base.html` + `static/css/base.css` — shared navbar and design system (colors, buttons, cards, badges, `.grid`). Reuse these classes instead of redefining them.
-- **Home page** — done.
-- **Products page** (`templates/products.html` / `static/{css,js}/products.js`) — the 6 curated `FEATURED_PRODUCTS`, real risk-based filters, working Analyze + Random Product buttons. Backed by `GET /api/products`.
-- **Product Analysis page** (`templates/product.html` / `static/{css,js}/product.js`) — 5 tabs (Overview / Historical Sales / Inventory / Forecast / Recommendations), 8 charts, all real numbers from the sales history + SARIMA forecast. Backed by `GET /api/product/<store_id>/<product_id>`.
-- **Upload Data page** (`templates/upload.html` / `static/{css,js}/upload.js`) — drag-and-drop CSV upload with a 4-step progress tracker, then the same 5-tab analysis dashboard as the Product Analysis page but **aggregated across every product in the uploaded file**. Uses the exact same `classify_risk` / reorder-point / stockout-probability formulas — see "How the Upload page relates to Product Analysis" below. Backed by `POST /api/upload` + `GET /api/uploaded/<upload_id>/{overview,historical,inventory,forecast,recommendations,download}`.
+StockMind uses machine learning to forecast product demand, flag stockout/overstock risk, and recommend restock actions — presented through an interactive web app with a context-aware AI chatbot.
 
-**Left for the team:**
+## Overview
 
-| Page | Template | CSS | JS | API it should call |
-|---|---|---|---|---|
-| Chatbot | `templates/chatbot.html` | `static/css/chatbot.css` | `static/js/chatbot.js` | `POST /api/chat` |
+Retail teams often react to stockouts and overstock after the fact. StockMind turns historical sales and inventory data into forward-looking decisions:
 
-The chatbot template has a `<!-- TODO -->` comment explaining the API. `_reference/` has a previous plain-but-working version of every page (including Upload) if useful as a starting point — not linked anywhere.
+1. **Forecast** future demand per product using time-series models (SARIMA + ML models).
+2. **Assess risk** — classify each product as Stockout Risk / Overstock Risk / Normal.
+3. **Recommend** whether to reorder, how much, and when.
+4. **Present** everything through a web interface — product catalog, per-product analysis with charts, and a custom dataset upload flow.
+5. **Explain** results in plain language via an AI chatbot.
 
-## How the Upload page relates to Product Analysis
+## Screenshots
 
-Same risk level and recommendation, yes — it's not a separate/simplified model:
+| Home | Products |
+|---|---|
+| 
+ | 
+|
 
-- **Risk Level** for every row in the uploaded file comes from the same `classify_risk()` thresholds (Critical < 3 days of stock, High < 7, Medium < 14, Low ≥ 14).
-- **Reorder Point / Recommended Order** use the identical formula: `(avg daily demand × 7-day lead time) + 20% safety stock`, and `Recommended Order = Reorder Point − current stock`.
-- **Stockout Probability %** (new) is a normal-approximation service-level calculation from each product's own daily demand and its variability — the same field now also shows up on the single-Product Analysis page ("X% chance of stockout").
-- The only real difference: the Upload page **aggregates** these per-product numbers across the whole file (totals, category breakdowns, a single SARIMA fit on total daily demand instead of one fit per product) so it stays fast and readable no matter how many products are in the file. The "Download Report" button exports the full, ungrouped per-product table as CSV if you want the raw numbers.
+| Product Analysis | Upload Data |
+|---|---|
+| 
+| 
+ |
 
-## Running it
+| Chatbot |
+|---|
+| ![Uploading Screenshot 2026-09-16 180835.png…]()
+ |
+
+## Features
+
+- **Home** — landing page introducing the platform.
+- **Products** — catalog of featured products with images, risk badges, and filters (High Stockout Risk, Overstock, High Demand, Seasonal, Normal).
+- **Product Analysis** — per-product deep dive: sales history, demand forecast (30-day, weekly buckets), inventory depletion projection, stockout/overstock reasoning, and a recommended reorder quantity + timing.
+- **Upload Data** — drag-and-drop a custom CSV and get a full risk/recommendation report generated from that dataset instead of the bundled demo data.
+- **AI Chatbot** — answers questions about a product's risk, forecast, or recommendation, grounded in the actual data and model output.
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Backend | Python, Flask |
+| Data & Modeling | pandas, NumPy, statsmodels (SARIMA) |
+| Frontend | HTML, CSS, JavaScript (no framework) |
+| Chatbot | n8n workflow (webhook → AI agent) called from the Flask backend |
+
+## Project Structure
 
 ```
+StockMind/
+├── app.py                     # Flask backend — page routes + JSON API
+├── utils.py                   # Data loading, risk scoring, reorder point, SARIMA forecasting
+├── regenerate_forecasts.py    # Recomputes forecasts.csv (precomputed SARIMA forecasts)
+├── retail_store_inventory.csv # Demo dataset
+├── forecasts.csv              # Precomputed forecasts the app reads at runtime
+├── requirements.txt
+├── templates/                 # Jinja templates (one per page)
+├── static/
+│   ├── css/                   # Per-page stylesheets
+│   ├── js/                    # Per-page frontend logic
+│   └── images/                # Product images and UI assets
+└── _reference/                # Earlier reference implementation of the 4 pages
+```
+
+## Getting Started
+
+### Prerequisites
+- Python 3.10+
+
+### Installation
+
+```bash
+git clone https://github.com/tasneem-ahmed05/StockMind.git
+cd StockMind
 pip install -r requirements.txt
+```
+
+### Run
+
+```bash
 python app.py
 ```
-Open `http://127.0.0.1:5000`.
 
-Uploaded files are saved under `uploads/` (created automatically, git-ignored) so a page refresh can reload the same analysis via its `?id=` in the URL. Safe to delete that folder any time — it's just a cache of past uploads.
+Then open `http://127.0.0.1:5000` in your browser.
 
-## Regenerating `forecasts.csv`
+## API Endpoints
 
-If you change `retail_store_inventory.csv`, re-run:
-```
-python regenerate_forecasts.py
-```
-This refits SARIMA on the full history for all 100 (store, product) pairs (~1 minute) and overwrites `forecasts.csv`. Skipping this just means the app fits SARIMA live per product on first request instead (slower, not persisted across restarts) — everything still works, just not instant.
+| Endpoint | Method | Description |
+|---|---|---|
+| `/api/products` | GET | Featured product catalog with risk level and demand trend; supports `?risk=` and `?search=` filters |
+| `/api/product/<store_id>/<product_id>` | GET | Full analysis for one product: history, forecast, risk breakdown, restock timing, and reasoning |
+| `/api/upload` | POST | Accepts a CSV, validates it, and returns a full risk/recommendation report |
+| `/api/chat` | POST | Forwards a question (with product context) to the chatbot and returns the answer |
 
-## Changing the 6 featured products / their photos / category
+## Dataset
 
-Open `utils.py`, find `FEATURED_PRODUCTS` near the top. Each entry is:
-```python
-{"store_id": "S001", "product_id": "P0006", "display_name": "Laptop Pro 15", "category": "Electronics", "image": "images/products/laptop-pro-15.jpg"}
-```
-- `store_id` / `product_id` must exist in `retail_store_inventory.csv`.
-- `category` is curated on purpose: this dataset assigns a *random* Category to every row, so pulling "Category" straight from the CSV for a specific product is meaningless — set the real one here instead.
-- Put an image file under `static/images/products/` and reference it here as a relative path (`images/products/yourfile.jpg`). Leave `"image": None` to fall back to a category icon (emoji).
+The bundled demo dataset (`retail_store_inventory.csv`) contains retail sales and inventory records across multiple stores, products, and categories, with fields including date, store/product IDs, category, inventory level, units sold, demand forecast, price, discount, and seasonality — used to train and validate the forecasting models.
+
+## How It Works
+
+- **Forecasting**: Baseline/naive forecast compared against SARIMA and ML models (Linear Regression, Random Forest, XGBoost); the best-performing approach is used per product.
+- **Risk classification**: Combines current inventory level, reorder point, lead time demand, and safety stock to classify each product's risk.
+- **Recommendation engine**: Converts the forecast and risk assessment into a concrete reorder decision — quantity and timing — with the reasoning behind it.
+- **Precomputed forecasts**: SARIMA forecasts are trained once and exported to `forecasts.csv`, so the app serves fast, consistent results instead of retraining on every request (falls back to live fitting only if the file is missing).
+
+## License
+
+This project was built as an academic graduation/course project. Add a license file if you plan to open it up for reuse.
