@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}StockMind - Home{% endblock %}
+{% set active = "home" %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+{% endblock %}
+{% block content %}
+<div class="hero-section">
+    <div class="page hero">
+        <div class="hero-text">
+            <h1>Smarter Inventory<br>Decisions with AI</h1>
+            <p>Forecast demand, detect stockout risks,<br>and optimize your inventory — all in one place.</p>
+            <div class="hero-actions">
+                <a href="/products" class="btn btn-primary">Explore Products<span class="arrow">→</span></a>
+                <a href="/upload" class="btn btn-secondary">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon"><path d="M12 16V4"/><path d="M6 10l6-6 6 6"/><path d="M4 20h16"/></svg>
+                    Upload Your Data
+                </a>
+            </div>
+        </div>
+        <div class="illustration">
+            <img src="{{ url_for('static', filename='images/hero-illustration.png') }}" alt="StockMind AI inventory illustration">
+        </div>
+    </div>
+    <svg class="hero-wave" viewBox="0 0 1600 90" preserveAspectRatio="none">
+        <path d="M0,40 C300,90 500,0 800,30 C1100,60 1300,10 1600,40 L1600,90 L0,90 Z"/>
+    </svg>
+</div>
+
+<div class="page">
+    <div class="features">
+        <div class="feature-item">
+            <div class="feature-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>
+            </div>
+            <div>
+                <b>Predict Demand</b>
+                <span>Forecast future demand with ML models</span>
+            </div>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg>
+            </div>
+            <div>
+                <b>Detect Risks</b>
+                <span>Identify stockout and overstock risks</span>
+            </div>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11z"/><path d="m9 12 2 2 4-4"/></svg>
+            </div>
+            <div>
+                <b>Optimize Inventory</b>
+                <span>Get recommended restock quantities</span>
+            </div>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+            </div>
+            <div>
+                <b>Make Better Decisions</b>
+                <span>Based on data, not guesswork</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

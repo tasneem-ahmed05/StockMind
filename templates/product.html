@@ -1,0 +1,241 @@
+{% extends "base.html" %}
+{% block title %}StockMind - Product Analysis{% endblock %}
+{% set active = "products" %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/product.css') }}">
+{% endblock %}
+{% block head %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+{% endblock %}
+{% block content %}
+<div class="page">
+
+    <div class="breadcrumb">
+        <a href="/">🏠</a>
+        <span class="crumb-sep">›</span>
+        <a href="/products">Products</a>
+        <span class="crumb-sep">›</span>
+        <span class="crumb-current" id="crumb-name">…</span>
+    </div>
+
+    <div id="loading" class="panel-state">Running the analysis…</div>
+    <div id="error" class="panel-state error-state" hidden></div>
+
+    <div id="analysis" hidden>
+
+        <!-- ---------- Hero ---------- -->
+        <div class="card hero">
+            <div class="hero-img"><img id="hero-image" alt=""></div>
+
+            <div class="hero-main">
+                <h1 id="hero-name"></h1>
+                <span class="pill-category" id="hero-category"></span>
+                <div class="hero-sub">
+                    <div class="metric-label">Current Stock</div>
+                    <div class="hero-stock"><span id="hero-stock"></span> <small>units</small></div>
+                </div>
+            </div>
+
+            <div class="hero-facts">
+                <div>
+                    <div class="metric-label">Avg Unit Price</div>
+                    <div class="metric-value" id="hero-price"></div>
+                    <div class="fact-note" id="hero-price-range"></div>
+                </div>
+                <div>
+                    <div class="metric-label">Avg Daily Demand</div>
+                    <div class="metric-value" id="hero-demand"></div>
+                    <div class="fact-note">units / day</div>
+                </div>
+                <div>
+                    <div class="metric-label">Days of Stock</div>
+                    <div class="metric-value" id="hero-days"></div>
+                    <div class="fact-note" id="hero-leadtime"></div>
+                </div>
+            </div>
+
+            <div class="hero-risk" id="hero-risk-box">
+                <div class="metric-label">Risk Level</div>
+                <div class="risk-big" id="hero-risk"></div>
+            </div>
+        </div>
+        <div class="hero-chatbot-cta" style="margin: 14px 0 24px;">
+            <a href="/chatbot" id="ask-chatbot-btn" class="btn btn-primary">Ask the chatbot about this product</a>
+        </div>
+        <!-- ---------- Tabs ---------- -->
+        <div class="tabs" id="tabs">
+            <button class="tab active" data-tab="overview">Overview</button>
+            <button class="tab" data-tab="historical">Historical Sales</button>
+            <button class="tab" data-tab="inventory">Inventory</button>
+            <button class="tab" data-tab="forecast">Forecast</button>
+            <button class="tab" data-tab="reco">Recommendations</button>
+        </div>
+
+        <!-- ---------- Overview ---------- -->
+        <section class="tab-panel active" id="panel-overview">
+            <div class="grid grid-3 chart-row">
+                <div class="card">
+                    <h3 class="card-title">Sales Trend <small>(last 6 complete months)</small></h3>
+                    <div class="chart-box"><canvas id="chart-monthly"></canvas></div>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Stock vs Reorder Point</h3>
+                    <div class="chart-box donut-box">
+                        <canvas id="chart-coverage"></canvas>
+                        <div class="donut-center">
+                            <div class="donut-value" id="donut-stock"></div>
+                            <div class="donut-label">units on hand</div>
+                        </div>
+                    </div>
+                    <div class="legend" id="coverage-legend"></div>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Predicted Demand <small>(next 4 weeks)</small></h3>
+                    <div class="chart-box"><canvas id="chart-weekly"></canvas></div>
+                </div>
+            </div>
+
+            <div class="grid grid-4 kpi-row">
+                <div class="card kpi">
+                    <div class="kpi-icon blue">📈</div>
+                    <div>
+                        <div class="metric-label">Predicted Demand (30d)</div>
+                        <div class="metric-value" id="kpi-demand"></div>
+                        <div class="fact-note" id="kpi-demand-change"></div>
+                    </div>
+                </div>
+                <div class="card kpi">
+                    <div class="kpi-icon red">⚠️</div>
+                    <div>
+                        <div class="metric-label">Risk Level</div>
+                        <div class="metric-value" id="kpi-risk"></div>
+                        <div class="fact-note" id="kpi-risk-note"></div>
+                    </div>
+                </div>
+                <div class="card kpi">
+                    <div class="kpi-icon purple">📦</div>
+                    <div>
+                        <div class="metric-label">Recommended Restock</div>
+                        <div class="metric-value" id="kpi-restock"></div>
+                        <div class="fact-note" id="kpi-restock-note"></div>
+                    </div>
+                </div>
+                <div class="card kpi">
+                    <div class="kpi-icon teal">📅</div>
+                    <div>
+                        <div class="metric-label">Recommended Timing</div>
+                        <div class="metric-value" id="kpi-timing"></div>
+                        <div class="fact-note" id="kpi-timing-note"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card why-card">
+                <div class="why-icon">💡</div>
+                <div class="why-body">
+                    <h3>Why this risk?</h3>
+                    <ul id="why-list"></ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ---------- Historical Sales ---------- -->
+        <section class="tab-panel" id="panel-historical">
+            <div class="card">
+                <h3 class="card-title">Daily Units Sold <small>(last 90 days)</small></h3>
+                <div class="chart-box tall"><canvas id="chart-history"></canvas></div>
+            </div>
+            <div class="grid grid-2 chart-row">
+                <div class="card">
+                    <h3 class="card-title">Monthly Totals</h3>
+                    <div class="chart-box"><canvas id="chart-monthly-bar"></canvas></div>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">History Summary</h3>
+                    <table class="kv-table" id="history-table"></table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ---------- Inventory ---------- -->
+        <section class="tab-panel" id="panel-inventory">
+            <div class="card">
+                <h3 class="card-title">Projected Stock Depletion <small>(next 30 days, if no restock)</small></h3>
+                <div class="chart-box tall"><canvas id="chart-projection"></canvas></div>
+                <p class="chart-note" id="projection-note"></p>
+            </div>
+            <div class="grid grid-2 chart-row">
+                <div class="card">
+                    <h3 class="card-title">Reorder Point Breakdown</h3>
+                    <div class="chart-box"><canvas id="chart-reorder"></canvas></div>
+                    <p class="chart-note" id="reorder-note"></p>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Inventory Figures</h3>
+                    <table class="kv-table" id="inventory-table"></table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ---------- Forecast ---------- -->
+        <section class="tab-panel" id="panel-forecast">
+            <div class="card">
+                <h3 class="card-title">Demand Forecast <small>(90 days actual → 30 days SARIMA forecast)</small></h3>
+                <div class="chart-box tall"><canvas id="chart-forecast"></canvas></div>
+            </div>
+            <div class="grid grid-2 chart-row">
+                <div class="card">
+                    <h3 class="card-title">Forecast Risk Days</h3>
+                    <div class="chart-box"><canvas id="chart-riskdays"></canvas></div>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Forecast Summary</h3>
+                    <table class="kv-table" id="forecast-table"></table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ---------- Recommendations ---------- -->
+        <section class="tab-panel" id="panel-reco">
+            <div class="card verdict-card" id="verdict-card">
+                <div class="verdict-badge" id="verdict-badge"></div>
+                <h2 id="verdict-title"></h2>
+                <p id="verdict-text"></p>
+            </div>
+            <div class="grid grid-3 chart-row">
+                <div class="card kpi-tall">
+                    <div class="metric-label">Order Quantity</div>
+                    <div class="metric-huge" id="reco-qty"></div>
+                    <p class="chart-note" id="reco-qty-note"></p>
+                </div>
+                <div class="card kpi-tall">
+                    <div class="metric-label">Order Timing</div>
+                    <div class="metric-huge" id="reco-timing"></div>
+                    <p class="chart-note" id="reco-timing-note"></p>
+                </div>
+                <div class="card kpi-tall">
+                    <div class="metric-label">Est. Order Value</div>
+                    <div class="metric-huge" id="reco-value"></div>
+                    <p class="chart-note" id="reco-value-note"></p>
+                </div>
+            </div>
+            <div class="card">
+                <h3 class="card-title">How this was calculated</h3>
+                <ul class="method-list" id="method-list"></ul>
+            </div>
+            <div class="card why-card">
+                <div class="why-icon">💡</div>
+                <div class="why-body">
+                    <h3>Why this risk?</h3>
+                    <ul id="why-list-2"></ul>
+                </div>
+            </div>
+        </section>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/product.js') }}"></script>
+{% endblock %}

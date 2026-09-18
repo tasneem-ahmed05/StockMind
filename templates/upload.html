@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}StockMind - Upload Data{% endblock %}
+{% set active = "upload" %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/upload.css') }}">
+{% endblock %}
+{% block content %}
+<div class="page">
+    <section id="upload-view">
+        <p class="page-kicker">4. Upload Data Page</p>
+        <div class="upload-card card">
+            <div class="upload-heading"><h1>Upload Your Data</h1><p>Upload a CSV file with your product data to get AI-powered insights.</p></div>
+            <div class="dropzone" id="dropzone" role="button" tabindex="0" aria-label="Choose CSV file">
+                <div class="upload-icon" aria-hidden="true">⇧</div><strong>Drag &amp; drop your CSV file here</strong><span>or</span>
+                <button class="btn btn-primary choose-btn" id="choose-btn" type="button">Choose File</button>
+                <input type="file" id="file-input" accept=".csv,text/csv" hidden><small>Supported format: CSV (max 10MB)</small>
+            </div>
+            <p class="upload-message" id="upload-message" aria-live="polite"></p>
+            <div class="upload-steps" aria-label="Upload progress">
+                <div class="step active"><span>1</span><div><b>Upload</b><small>File is uploaded</small></div></div><div class="step-line"></div>
+                <div class="step"><span>2</span><div><b>Validate</b><small>Checking data quality</small></div></div><div class="step-line"></div>
+                <div class="step"><span>3</span><div><b>Process</b><small>Preparing for analysis</small></div></div><div class="step-line"></div>
+                <div class="step"><span>4</span><div><b>Analyze</b><small>Generating insights</small></div></div>
+            </div>
+        </div>
+    </section>
+    <section id="results-view" hidden>
+        <div class="results-header"><div><h1>Uploaded Data <span class="dataset-pill">▣ <span id="dataset-name">Custom Dataset</span></span></h1><p>Insights based on your uploaded data file.</p></div><div class="result-actions"><button class="report-btn" id="download-report" type="button">⇩ &nbsp; Download Report</button><button class="text-btn" id="upload-another" type="button">Upload another file</button></div></div>
+        <div class="result-tabs" aria-label="Data report tabs"><button class="active" type="button">Overview</button><button type="button">Historical Sales</button><button type="button">Inventory</button><button type="button">Forecast</button><button type="button">Recommendations</button></div>
+        <div class="results-grid">
+            <article class="summary-card card"><h2>Data Summary</h2><div class="summary-metrics"><div class="summary-metric"><i>▤</i><span>Total Products</span><b id="r-products">—</b></div><div class="summary-metric"><i>▣</i><span>Total Records</span><b id="r-records">—</b></div><div class="summary-metric"><i>▣</i><span>Date Range</span><b class="date-value" id="r-dates">—</b></div></div></article>
+            <article class="risk-card card"><h2>Risk Distribution</h2><div class="risk-content"><div class="donut" id="risk-donut"><div><b id="risk-total">0</b><span>products</span></div></div><div class="risk-legend" id="r-risk-dist"></div></div></article>
+            <article class="top-products card"><h2>Top 5 Products by Risk</h2><div class="risk-table"><div class="risk-row header"><span>Product</span><span>Risk Level</span><span>Stockout Probability</span></div><div id="r-top-table"></div></div></article>
+            <article class="insights-card card"><h2><i>◔</i> Key Insights</h2><ul id="r-insights"></ul><button class="btn btn-primary full-report" id="view-report" type="button">View Full Report&nbsp; →</button></article>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}StockMind - Chatbot{% endblock %}
+{% set active = "chatbot" %}
+{% block content %}
+<div class="page">
+    <h1>AI Assistant</h1>
+    <p style="color:var(--text-muted)" id="chat-context-label">Ask me anything about a product.</p>
+
+    <div class="card chat-window">
+        <div class="chat-messages" id="chat-messages"></div>
+        <div class="chat-input-row">
+            <input id="chat-input" placeholder="Ask me anything about this product...">
+            <button class="btn btn-primary" id="chat-send">Send</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+{% endblock %}

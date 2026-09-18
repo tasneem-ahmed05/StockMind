@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}StockMind - Product Analysis{% endblock %}
+{% set active = "products" %}
+{% block head %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+{% endblock %}
+{% block content %}
+<div class="page" id="product-page">
+    <p style="color:var(--text-muted)"><a href="/products">Products</a> / <span id="crumb-product"></span></p>
+
+    <div class="grid grid-2" style="align-items:start">
+        <div style="display:flex;gap:16px;align-items:center">
+            <div class="product-image" style="width:70px;height:70px;border-radius:12px;flex-shrink:0" id="product-image"></div>
+            <div>
+                <h1 id="product-title"></h1>
+                <span class="badge" id="category-badge"></span>
+            </div>
+        </div>
+        <div class="card" style="text-align:center">
+            <div class="metric-label">Risk Level</div>
+            <span class="badge" id="risk-badge" style="font-size:16px"></span>
+        </div>
+    </div>
+
+    <div class="grid grid-4" style="margin:20px 0">
+        <div class="card"><div class="metric-label">Current Stock</div><div class="metric-value" id="m-stock"></div></div>
+        <div class="card"><div class="metric-label">Avg Daily Demand</div><div class="metric-value" id="m-demand"></div></div>
+        <div class="card"><div class="metric-label">Reorder Point</div><div class="metric-value" id="m-reorder"></div></div>
+        <div class="card"><div class="metric-label">Recommended Order</div><div class="metric-value" id="m-order"></div></div>
+    </div>
+
+    <div class="grid grid-2">
+        <div class="card">
+            <b>Historical Demand (last 90 days)</b>
+            <canvas id="history-chart" height="180"></canvas>
+        </div>
+        <div class="card">
+            <b>30-Day Demand Forecast</b>
+            <canvas id="forecast-chart" height="180"></canvas>
+        </div>
+    </div>
+
+    <div class="card" style="margin-top:20px">
+        <b>Why this risk?</b>
+        <ul id="why-list"></ul>
+    </div>
+
+    <div class="card" style="margin-top:20px">
+        <b>Recommendation</b>
+        <p id="recommendation-text"></p>
+        <a class="btn btn-primary" id="ask-chatbot-btn" href="/chatbot">Ask the chatbot about this product</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/product.js') }}"></script>
+{% endblock %}

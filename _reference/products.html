@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}StockMind - Products{% endblock %}
+{% set active = "products" %}
+{% block content %}
+<div class="page">
+    <h1>Products</h1>
+    <p style="color:var(--text-muted)">Our featured products — each one has a full demand forecast and restock analysis.</p>
+
+    <input class="search-input" id="search" placeholder="Search for a product...">
+
+    <div class="filters" id="filters">
+        <div class="filter-chip active" data-risk="All">All</div>
+        <div class="filter-chip" data-risk="Critical">Critical</div>
+        <div class="filter-chip" data-risk="High">High Risk</div>
+        <div class="filter-chip" data-risk="Medium">Medium</div>
+        <div class="filter-chip" data-risk="Low">Low</div>
+    </div>
+
+    <div class="product-grid" id="products-grid">
+        <p style="color:var(--text-muted)">Loading...</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/products.js') }}"></script>
+{% endblock %}

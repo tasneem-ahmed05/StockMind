@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}StockMind - Data Analysis{% endblock %}
+{% set active = "upload" %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/upload.css') }}">
+{% endblock %}
+{% block content %}
+<main class="page">
+    <section id="analysis-empty" class="analysis-empty card" hidden>
+        <h1>No data has been analyzed yet</h1>
+        <p>Upload a CSV file, then choose <b>Analyze Data</b> to create your report.</p>
+        <a href="/upload" class="btn btn-primary">Go to Upload Data</a>
+    </section>
+    <section id="results-view" hidden>
+        <div class="results-header"><div><h1>Uploaded Data <span class="dataset-pill">▣ <span id="dataset-name">Custom Dataset</span></span></h1><p>Insights based on your uploaded data file.</p></div><div class="result-actions"><button class="report-btn" id="download-report" type="button">⇩ &nbsp; Download Report</button><a class="text-btn" href="/upload">Upload another file</a></div></div>
+        <div class="result-tabs" aria-label="Data report tabs"><button class="active" type="button" data-tab="overview">Overview</button><button type="button" data-tab="historical">Historical Sales</button><button type="button" data-tab="inventory">Inventory</button><button type="button" data-tab="forecast">Forecast</button><button type="button" data-tab="recommendations">Recommendations</button></div>
+        <div class="results-grid report-panel" data-panel="overview">
+            <article class="summary-card card"><h2>Data Summary</h2><div class="summary-metrics"><div class="summary-metric"><i>▤</i><span>Total Products</span><b id="r-products">—</b></div><div class="summary-metric"><i>▣</i><span>Total Records</span><b id="r-records">—</b></div><div class="summary-metric"><i>▣</i><span>Date Range</span><b class="date-value" id="r-dates">—</b></div></div></article>
+            <article class="risk-card card"><h2>Risk Distribution</h2><div class="risk-content"><div class="donut" id="risk-donut"><div><b id="risk-total">0</b><span>products</span></div></div><div class="risk-legend" id="r-risk-dist"></div></div></article>
+            <article class="top-products card"><h2>Top 5 Products by Risk</h2><div class="risk-table"><div class="risk-row header"><span>Product</span><span>Risk Level</span><span>Stockout Probability</span></div><div id="r-top-table"></div></div></article>
+            <article class="insights-card card"><h2><i>◔</i> Key Insights</h2><ul id="r-insights"></ul><button class="btn btn-primary full-report" id="view-report" type="button">Download Full Report&nbsp; →</button></article>
+        </div>
+        <section class="report-panel tab-card card" data-panel="historical" hidden><h2>Historical Sales</h2><p class="tab-subtitle">Monthly sales totals calculated from the uploaded CSV.</p><div class="sales-chart" id="sales-chart"></div><div class="chart-labels" id="sales-labels"></div></section>
+        <section class="report-panel tab-card" data-panel="inventory" hidden><h2>Inventory Status</h2><div class="tab-metrics"><div><span>Total Stock on Hand</span><b id="inventory-on-hand">—</b></div><div><span>Combined Reorder Point</span><b id="inventory-reorder-point">—</b></div></div><div class="data-table-wrap"><table><thead><tr><th>Store</th><th>Product</th><th>Category</th><th>Current Stock</th><th>Days Left</th><th>Risk</th></tr></thead><tbody id="inventory-table"></tbody></table></div></section>
+        <section class="report-panel tab-card" data-panel="forecast" hidden><h2>Demand Forecast</h2><p class="tab-subtitle">A 30-day projection based on the latest demand forecast in the uploaded data.</p><div class="forecast-grid"><div><span>Forecast daily demand</span><b id="forecast-daily">—</b></div><div><span>Forecast demand, next 30 days</span><b id="forecast-next-30">—</b></div><div><span>Change vs. previous 30 days</span><b id="forecast-change">—</b></div></div></section>
+        <section class="report-panel tab-card" data-panel="recommendations" hidden><h2>Replenishment Recommendations</h2><p class="tab-subtitle">Products sorted by the recommended order quantity.</p><div class="recommendation-total">Recommended quantity: <b id="recommendation-total">—</b> units</div><div class="data-table-wrap"><table><thead><tr><th>Store</th><th>Product</th><th>Category</th><th>Risk</th><th>Stock</th><th>Order Quantity</th></tr></thead><tbody id="recommendation-table"></tbody></table></div></section>
+    </section>
+</main>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/analysis.js') }}"></script>
+{% endblock %}

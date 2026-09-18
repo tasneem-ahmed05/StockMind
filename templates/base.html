@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}StockMind{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    {% block extra_css %}{% endblock %}
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <div class="navbar">
+        <div class="brand"><img src="{{ url_for('static', filename='images/logo.png') }}" class="logo" alt="StockMind logo"> StockMind</div>
+        <nav>
+            <a href="/" class="{{ 'active' if active=='home' else '' }}">Home</a>
+            <a href="/products" class="{{ 'active' if active=='products' else '' }}">Products</a>
+            <a href="/upload" class="{{ 'active' if active=='upload' else '' }}">Upload Data</a>
+            <a href="/chatbot" class="{{ 'active' if active=='chatbot' else '' }}">Chatbot</a>
+        </nav>
+        <div class="avatar"><img src="{{ url_for('static', filename='images/user-icon.png') }}" alt="User"></div>
+    </div>
+
+    {% block content %}{% endblock %}
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

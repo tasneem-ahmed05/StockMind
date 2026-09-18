@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}StockMind - Upload Data{% endblock %}
+{% set active = "upload" %}
+{% block content %}
+<div class="page">
+    <h1>Upload Your Data</h1>
+    <p style="color:var(--text-muted)">Upload a CSV file with your product data to get AI-powered insights.</p>
+
+    <div class="dropzone" id="dropzone">
+        <div style="font-size:32px">⬆️</div>
+        <p><b>Drag & drop your CSV file here</b><br>or</p>
+        <button class="btn btn-primary" id="choose-btn">Choose File</button>
+        <input type="file" id="file-input" accept=".csv" style="display:none">
+        <p style="font-size:12px;margin-top:10px">Supported format: CSV (max 10MB)</p>
+    </div>
+
+    <div id="results" style="display:none;margin-top:24px">
+        <div class="grid grid-3">
+            <div class="card"><div class="metric-label">Total Products</div><div class="metric-value" id="r-products"></div></div>
+            <div class="card"><div class="metric-label">Total Records</div><div class="metric-value" id="r-records"></div></div>
+            <div class="card"><div class="metric-label">Date Range</div><div class="metric-value" id="r-dates" style="font-size:15px"></div></div>
+        </div>
+
+        <div class="card" style="margin-top:20px">
+            <b>Risk Distribution</b>
+            <div id="r-risk-dist"></div>
+        </div>
+
+        <div class="card" style="margin-top:20px">
+            <b>Top Products by Risk</b>
+            <table>
+                <thead><tr><th>Store</th><th>Product</th><th>Category</th><th>Risk</th><th>Recommended Order</th></tr></thead>
+                <tbody id="r-top-table"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+{% endblock %}
